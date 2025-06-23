@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.appLabels }}
+  template:
+    metadata:
+      name: {{ .Values.appLabels }}
+      labels:
+        app: {{ .Values.appLabels }}
+    spec:
+      containers:
+        - name: {{ .Values.container.name }}
+          image: {{ .Values.image.name }}
+          imagePullPolicy: {{ .Values.image.pollicy }}
+          ports:
+            - containerPort: {{ .Values.container.ports }}
+          env:
+            {{- range .Values.container.envVars }}
+            - name: {{ .name }}
+              {{- if .value }}
+              value: {{ .value | quote }}
+              {{- else if .valueFrom }}
+              valueFrom:
+                {{- if .valueFrom.configMapKeyRef }}
+                configMapKeyRef:
+                  name: {{ .valueFrom.configMapKeyRef.name | quote }}
+                  key: {{ .valueFrom.configMapKeyRef.key | quote }}
+                {{- end }}
+                {{- if .valueFrom.secretKeyRef }}
+                secretKeyRef:
+                  name: {{ .valueFrom.secretKeyRef.name | quote }}
+                  key: {{ .valueFrom.secretKeyRef.key | quote }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+      volumes:
+      {{- range .Values.volumes }}
+        - name: {{ .name }}
+          {{- if .emptyDir }}
+          emptyDir: {}
+          {{- end }}
+      {{- end }}

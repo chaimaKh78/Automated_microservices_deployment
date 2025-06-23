@@ -1,0 +1,16 @@
+{{- range $name, $instance := .Values.instances }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $instance.service.name }}
+  namespace: {{ $instance.namespace }}
+spec:
+  selector:
+    app: {{ $instance.appLabels }}
+  ports:
+    - port: {{ $instance.service.port }}
+      targetPort: {{ $instance.service.containerPorts }}
+  type: {{ $instance.service.type }}
+---
+{{- end }}

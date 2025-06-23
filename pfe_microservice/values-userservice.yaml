@@ -1,0 +1,19 @@
+deploymentName: user-deployment
+namespace: test
+appLabels: user
+image:
+  name: chaima15/user:v1.0.0
+  policy: IfNotPresent
+container:
+  name: user
+  ports: 8075
+  envVars:
+    - name: ADDR_EUREKA
+      value: "eureka-service:8761"
+    - name: ADDR_ITEM
+      value: "item-service:8055"
+service:
+  name: user-service
+  port: 8075
+  containerPorts: 8075
+  type: LoadBalancer

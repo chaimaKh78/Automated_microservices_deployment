@@ -1,0 +1,33 @@
+deploymentName: item-deployment
+namespace: test
+appLabels: item
+image:
+  name: chaima15/item:v1.0.0
+  policy: IfNotPresent
+container:
+  name: item
+  ports: 8055
+  envVars:
+    - name: ADDR_EUREKA
+      value: "eureka-service:8761"
+    - name: ADDR_USER
+      value: "user-service:8075"
+    - name: SQL_ADDR
+      value: "sql:3306"
+    - name: SQL_USER
+      value: "root"
+    - name: MYSQL_ROOT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mysql-secret
+          key: MYSQL_ROOT_PASSWORD
+    - name: MYSQL_DATABASE
+      valueFrom:
+        secretKeyRef:
+          name: mysql-secret
+          key: MYSQL_DATABASE
+service:
+  name: item-service
+  port: 8055
+  containerPorts: 8055
+  type: LoadBalancer

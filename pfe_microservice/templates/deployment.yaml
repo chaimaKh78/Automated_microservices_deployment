@@ -1,0 +1,47 @@
+{{- range $name, $instance := .Values.instances }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $instance.deploymentName }}
+  namespace: {{ $instance.namespace }}
+  labels:
+    app: {{ $instance.appLabels }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $instance.appLabels }}
+  template:
+    metadata:
+      labels:
+        app: {{ $instance.appLabels }}
+    spec:
+      containers:
+        - name: {{ $instance.container.name }}
+          image: {{ $instance.image.name }}
+          imagePullPolicy: {{ $instance.image.policy }}
+          ports:
+            - containerPort: {{ $instance.container.ports }}
+          env:
+            {{- range $envVar := $instance.container.envVars }}
+            - name: {{ $envVar.name }}
+              {{- if $envVar.value }}
+              value: {{ $envVar.value | quote }}
+              {{- else if $envVar.valueFrom }}
+              valueFrom:
+                {{- if $envVar.valueFrom.configMapKeyRef }}
+                configMapKeyRef:
+                  name: {{ $envVar.valueFrom.configMapKeyRef.name | quote }}
+                  key: {{ $envVar.valueFrom.configMapKeyRef.key | quote }}
+                {{- end }}
+                {{- if $envVar.valueFrom.secretKeyRef }}
+                secretKeyRef:
+                  name: {{ $envVar.valueFrom.secretKeyRef.name | quote }}
+                  key: {{ $envVar.valueFrom.secretKeyRef.key | quote }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+      restartPolicy: Always
+---
+{{- end }}

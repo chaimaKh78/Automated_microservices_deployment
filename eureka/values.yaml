@@ -1,0 +1,14 @@
+deploymentName: eureka-deployment
+namespace: test
+appLabels: eureka
+image:
+  name: chaima15/eureka:v1.0.0
+  pollicy: IfNotPresent
+container:
+  name: eureka-service
+  ports: 8761
+service:
+  name: eureka-service
+  port: 8761
+  containerPorts: 8761
+  type: LoadBalancer

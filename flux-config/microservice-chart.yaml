@@ -1,0 +1,14 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: pfe-microservice
+  namespace: test
+spec:
+  interval: 1m
+  chart: ./pfe_microservice
+  sourceRef:
+    kind: GitRepository
+    name: test
+  version: 0.1.1
+  valuesFiles:
+    - pfe_microservice/values.yaml

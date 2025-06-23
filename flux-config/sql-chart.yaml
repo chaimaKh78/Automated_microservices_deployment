@@ -1,0 +1,14 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: sql
+  namespace: test
+spec:
+  interval: 1m
+  chart: ./sql
+  sourceRef:
+    kind: GitRepository
+    name: test
+  version: 0.1.0
+  valuesFiles:
+    - sql/values.yaml

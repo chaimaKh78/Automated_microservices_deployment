@@ -1,0 +1,11 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sql-release
+  namespace: test
+spec:
+  interval: 1m
+  chartRef:
+    kind: HelmChart
+    name: sql
+    namespace: test

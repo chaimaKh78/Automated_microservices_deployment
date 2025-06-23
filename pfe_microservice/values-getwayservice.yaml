@@ -1,0 +1,21 @@
+deploymentName: apigateway-deployment
+namespace: test
+appLabels: apigateway
+image:
+  name: chaima15/apigetway:v1.4.0
+  policy: IfNotPresent
+container:
+  name: apigateway
+  ports: 8090
+  envVars:
+    - name: ADDR_EUREKA
+      value: "eureka-service:8761"
+    - name: ADDR_USER
+      value: "user-service:8075"
+    - name: ADDR_ITEM
+      value: "item-service:8055"
+service: 
+  name: apigateway-service
+  port: 8090
+  containerPorts: 8090
+  type: LoadBalancer

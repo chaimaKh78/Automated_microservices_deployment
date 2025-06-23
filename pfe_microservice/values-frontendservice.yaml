@@ -1,0 +1,21 @@
+deploymentName: front-deployment
+namespace: test
+appLabels: front
+image:
+  name: chaima15/front_eco:v1.0.0
+  policy: IfNotPresent
+container:
+  name: front
+  ports: 4200
+  envVars:
+    - name: ADDR_GETWAY
+      value: "apigateway-service:8090"
+    - name: ADDR_USER
+      value: "user-service:8075"
+    - name: ADDR_ITEM
+      value: "item-service:8055"
+service:
+  name: front-service
+  port: 4200
+  containerPorts: 4200
+  type: LoadBalancer

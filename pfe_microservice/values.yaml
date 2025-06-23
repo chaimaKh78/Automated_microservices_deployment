@@ -1,0 +1,102 @@
+instances:
+  frontend:
+    deploymentName: front-deployment
+    namespace: test
+    appLabels: front
+    image:
+      name: chaima15/front_eco:v1.4.0
+      policy: IfNotPresent
+    container:
+      name: front
+      ports: 4200
+      envVars:
+        - name: ADDR_GETWAY
+          value: "apigateway-service:8090"
+        - name: ADDR_USER
+          value: "user-service:8075"
+        - name: ADDR_ITEM
+          value: "item-service:8055"
+    service:
+      name: front-service
+      port: 4200
+      containerPorts: 4200
+      type: LoadBalancer
+
+  apigateway:
+    deploymentName: apigateway-deployment
+    namespace: test
+    appLabels: apigateway
+    image:
+      name: chaima15/apigetway:v1.4.0
+      policy: IfNotPresent
+    container:
+      name: apigateway
+      ports: 8090
+      envVars:
+        - name: ADDR_EUREKA
+          value: "eureka-service:8761"
+        - name: ADDR_USER
+          value: "user-service:8075"
+        - name: ADDR_ITEM
+          value: "item-service:8055"
+    service: 
+      name: apigateway-service
+      port: 8090
+      containerPorts: 8090
+      type: LoadBalancer
+
+  item:
+    deploymentName: item-deployment
+    namespace: test
+    appLabels: item
+    image:
+      name: chaima15/item:v1.5.0
+      policy: IfNotPresent
+    container:
+      name: item
+      ports: 8055
+      envVars:
+        - name: ADDR_EUREKA
+          value: "eureka-service:8761"
+        - name: ADDR_USER
+          value: "user-service:8075"
+        - name: SQL_ADDR
+          value: "sql:3306"
+        - name: SQL_USER
+          value: "root"
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_DATABASE
+    service:
+      name: item-service
+      port: 8055
+      containerPorts: 8055
+      type: LoadBalancer
+
+  user:
+    deploymentName: user-deployment
+    namespace: test
+    appLabels: user
+    image:
+      name: chaima15/user:v1.7.0
+      policy: IfNotPresent
+    container:
+      name: user
+      ports: 8075
+      envVars:
+        - name: ADDR_EUREKA
+          value: "eureka-service:8761"
+        - name: ADDR_ITEM
+          value: "item-service:8055"
+    service:
+      name: user-service
+      port: 8075
+      containerPorts: 8075
+      type: LoadBalancer

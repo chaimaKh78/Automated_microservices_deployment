@@ -1,0 +1,36 @@
+deploymentName: sql-deployment
+namespace: test
+appLabels: sql
+image:
+  name: mysql:5.7
+  pollicy: IfNotPresent
+container:
+  name: sql
+  ports: 3306
+  envVars:
+      - name: PORT
+        valueFrom:
+          configMapKeyRef:
+            name: mysql-config
+            key: PORT
+      - name: MYSQL_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: mysql-secret
+            key: MYSQL_ROOT_PASSWORD
+      - name: MYSQL_DATABASE
+        valueFrom:
+          secretKeyRef:
+            name: mysql-secret
+            key: MYSQL_DATABASE
+  volumeMounts:
+    - name: mysql-data
+      mountPath: /var/lib/mysql
+volumes:
+  - name: mysql-data
+    emptyDir: {}
+service:
+  name: sql-service
+  port: 3306
+  containerPorts: 3306
+  type: ClusterIP
